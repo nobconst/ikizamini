@@ -30,7 +30,7 @@ ob_start();
                             <?php endif; ?>
                         </td>
                         <td>
-                            <a href="<?= SITE_URL ?>/ikizamini/test/result/<?= $test['id'] ?>">View</a>
+                            <a href="<?= SITE_URL ?>/test/result/<?= $test['id'] ?>">View</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

@@ -131,7 +131,7 @@ class TestController extends Controller {
         }
 
         if ($session['completed']) {
-            $this->redirect('/ikizamini/test/result/' . $test_id);
+            $this->redirect('/test/result/' . $test_id);
         }
 
         $lang = $_SESSION['lang'] ?? 'rw';
@@ -221,7 +221,7 @@ class TestController extends Controller {
 
         $this->log('TEST_SUBMITTED');
 
-        header('Location: /ikizamini/test/result/' . $test_id);
+        header('Location: /test/result/' . $test_id);
         exit;
     }
 
