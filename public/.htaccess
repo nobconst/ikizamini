@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /ikizamini/public/
+    RewriteBase /public/
     
     # Don't rewrite if the request is for a real file
     RewriteCond %{REQUEST_FILENAME} !-f
