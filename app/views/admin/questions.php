@@ -3,7 +3,10 @@ ob_start();
 ?>
 
 <div class="container">
-    <h1 style="margin: 30px 0;">❓ Manage Questions <a href="<?= SITE_URL ?>/admin/question/add" class="btn btn-sm btn-success">+ Add Question</a></h1>
+    <h1 style="margin: 30px 0;">❓ Manage Questions 
+        <a href="<?= SITE_URL ?>/admin/question/add" class="btn btn-sm btn-success">+ Add Question</a>
+        <a href="<?= SITE_URL ?>/admin/driving-test-import" class="btn btn-sm btn-info"> Import CSV</a>
+    </h1>
 
     <table class="table-responsive">
         <table>

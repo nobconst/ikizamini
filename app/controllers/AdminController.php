@@ -222,6 +222,137 @@ class AdminController extends Controller {
         $this->view('admin/question-add', ['categories' => $categories]);
     }
 
+    public function drivingTestImport() {
+        $categories = $this->db->query("SELECT * FROM categories")->fetchAll();
+        $this->view('admin/driving-test-import', ['categories' => $categories]);
+    }
+
+    public function importDrivingTestQuestions() {
+        // Clean any output buffers
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        
+        // Set JSON header
+        header('Content-Type: application/json');
+        
+        try {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('Invalid request method');
+            }
+
+            $questions = json_decode($_POST['questions'] ?? '[]', true);
+            $category_id = $_POST['category_id'] ?? 1;
+
+            if (empty($questions)) {
+                throw new Exception('No questions to import');
+            }
+
+            $imported = 0;
+            $updated = 0;
+            $errors = 0;
+
+            // Begin transaction
+            $this->db->beginTransaction();
+
+            foreach ($questions as $q) {
+                try {
+                    // Check if question already exists by question number
+                    $existingStmt = $this->db->prepare("
+                        SELECT q.id FROM questions q
+                        JOIN question_translations qt ON q.id = qt.question_id
+                        WHERE qt.question_text LIKE ? AND qt.language = 'rw'
+                        LIMIT 1
+                    ");
+                    $existingStmt->execute(['%' . trim($q['question']) . '%']);
+                    $existing = $existingStmt->fetch();
+
+                    if ($existing) {
+                        // Update existing question
+                        $question_id = $existing['id'];
+                        $updated++;
+                    } else {
+                        // Create new question
+                        $stmt = $this->db->prepare("INSERT INTO questions (category_id, image) VALUES (?, ?)");
+                        $stmt->execute([$category_id, null]);
+                        $question_id = $this->db->lastInsertId();
+                        $imported++;
+                    }
+
+                    // Add/update question translation (Kinyarwanda)
+                    $qtStmt = $this->db->prepare("
+                        INSERT INTO question_translations (question_id, language, question_text)
+                        VALUES (?, 'rw', ?)
+                        ON DUPLICATE KEY UPDATE question_text = VALUES(question_text)
+                    ");
+                    $qtStmt->execute([$question_id, trim($q['question'])]);
+
+                    // Delete existing answers for this question to avoid duplicates
+                    $delStmt = $this->db->prepare("DELETE FROM answers WHERE question_id = ?");
+                    $delStmt->execute([$question_id]);
+
+                    // Create 4 answers
+                    $choices = [$q['choice1'], $q['choice2'], $q['choice3'], $q['choice4']];
+                    $correctLetter = strtolower($q['correct_answer']);
+                    $correctIndex = ord($correctLetter) - ord('a'); // a=0, b=1, c=2, d=3
+
+                    for ($i = 0; $i < 4; $i++) {
+                        $isCorrect = ($i === $correctIndex) ? 1 : 0;
+                        
+                        // Add answer
+                        $ansStmt = $this->db->prepare("
+                            INSERT INTO answers (question_id, is_correct) 
+                            VALUES (?, ?)
+                        ");
+                        $ansStmt->execute([$question_id, $isCorrect]);
+                        $answer_id = $this->db->lastInsertId();
+
+                        // Add answer translation (Kinyarwanda)
+                        $atStmt = $this->db->prepare("
+                            INSERT INTO answer_translations (answer_id, language, answer_text)
+                            VALUES (?, 'rw', ?)
+                        ");
+                        $atStmt->execute([$answer_id, trim($choices[$i])]);
+                    }
+
+                } catch (Exception $e) {
+                    $errors++;
+                    error_log("Error importing question {$q['question_number']}: " . $e->getMessage());
+                    continue;
+                }
+            }
+
+            // Commit transaction
+            $this->db->commit();
+
+            $this->log('DRIVING_TEST_IMPORTED', [
+                'imported' => $imported,
+                'updated' => $updated,
+                'errors' => $errors
+            ]);
+
+            echo json_encode([
+                'success' => true,
+                'imported' => $imported,
+                'updated' => $updated,
+                'errors' => $errors,
+                'message' => "Successfully processed {$imported} new questions and updated {$updated} existing questions."
+            ]);
+            exit;
+
+        } catch (Exception $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            
+            echo json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+            exit;
+        }
+    }
+
     public function deleteQuestion($question_id) {
         $this->question_model->deleteQuestion($question_id);
         $this->log('QUESTION_DELETED');
