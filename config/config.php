@@ -2,13 +2,13 @@
 
 // DATABASE CONFIGURATION
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'provisor_exam');
+define('DB_USER', 'fhlhtdqwop_ikizamini');
+define('DB_PASS', 'ikizamini2');
+define('DB_NAME', 'fhlhtdqwop_provisor_exam');
 
 // SITE SETTINGS
 define('SITE_NAME', 'IKIZAMINI ONLINE');
-define('SITE_URL', 'http://localhost/ikizamini');
+define('SITE_URL', 'https://ikizamini.online');
 define('TIMEZONE', 'Africa/Kigali');
 
 // SESSION
