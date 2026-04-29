@@ -3,9 +3,9 @@
 class Translate {
     
     private static $db;
-    private static $language = 'en';
+    private static $language = 'rw';
     
-    public static function init($db, $language = 'en') {
+    public static function init($db, $language = 'rw') {
         self::$db = $db;
         self::$language = $language;
     }
@@ -22,25 +22,25 @@ class Translate {
     
     // Get question with current language translation
     public static function getQuestion($question) {
-        if (isset($question[$_SESSION['lang'] ?? 'en']) && !empty($question[$_SESSION['lang'] ?? 'en'])) {
-            return $question[$_SESSION['lang'] ?? 'en'];
+        if (isset($question[$_SESSION['lang'] ?? 'rw']) && !empty($question[$_SESSION['lang'] ?? 'rw'])) {
+            return $question[$_SESSION['lang'] ?? 'rw'];
         }
-        return $question['en'] ?? $question['text'] ?? '';
+        return $question['rw'] ?? $question['en'] ?? $question['text'] ?? '';
     }
     
     // Get answer with current language translation
     public static function getAnswer($answer) {
-        if (isset($answer[$_SESSION['lang'] ?? 'en']) && !empty($answer[$_SESSION['lang'] ?? 'en'])) {
-            return $answer[$_SESSION['lang'] ?? 'en'];
+        if (isset($answer[$_SESSION['lang'] ?? 'rw']) && !empty($answer[$_SESSION['lang'] ?? 'rw'])) {
+            return $answer[$_SESSION['lang'] ?? 'rw'];
         }
-        return $answer['en'] ?? $answer['text'] ?? '';
+        return $answer['rw'] ?? $answer['en'] ?? $answer['text'] ?? '';
     }
     
     // Translations dictionary
     public static function t($key) {
         $lang = self::$language;
         if (empty($lang)) {
-            $lang = $_SESSION['lang'] ?? 'en';
+            $lang = $_SESSION['lang'] ?? 'rw';
         }
         
         $translations = [
@@ -53,7 +53,8 @@ class Translate {
                 'pricing' => 'Pricing',
                 'about' => 'About',
                 'profile' => 'Profile',
-                'settings' => 'Settings',
+	                'settings' => 'Settings',
+	                'menu' => 'Menu',
                 'welcome' => 'Welcome',
                 'start_test' => 'Start Test',
                 'take_test' => 'Take Test',
@@ -216,7 +217,31 @@ class Translate {
                 'footer_links' => 'Links',
                 'footer_contact' => 'Contact',
                 'copyright' => '© 2026 ProviSor Exam System. All rights reserved.',
-                'test_answered' => 'Answered',
+	                'test_answered' => 'Answered',
+	                'test_blank' => 'Blank',
+	                'test_correct' => 'Correct',
+	                'test_incorrect' => 'Incorrect',
+	                'test_no_answer' => 'No answer',
+	                'test_your_answer' => 'Your answer',
+	                'test_correct_answer' => 'Correct answer',
+	                'test_correct_answer_unavailable' => 'Correct answer unavailable',
+	                'test_exam_status' => 'Exam Status',
+	                'test_unanswered_zero_note' => 'Unanswered questions are counted as zero when you submit or when time ends.',
+	                'test_submit_anytime_note' => 'You can submit at any time. Questions left blank are saved as incorrect and receive zero.',
+	                'test_all_answered_notice' => 'All questions are answered. You can submit your exam.',
+	                'test_blank_submit_notice' => 'Blank questions receive zero if you submit now.',
+	                'test_blank_confirm_suffix' => 'Blank questions will receive zero.',
+	                'test_submit_now_confirm' => 'Submit your exam now?',
+	                'test_time_expired' => 'Time expired',
+	                'test_submitting_exam' => 'Submitting exam',
+	                'test_saving_answers' => 'Please wait while your answers are saved.',
+	                'test_saving_blanks_zero' => 'Blank questions are being saved as zero.',
+	                'test_leaving_warning' => 'Leaving the page will end your exam. Blank answers receive zero.',
+	                'test_review' => 'Review',
+	                'test_pass_mark' => 'Pass mark',
+	                'test_questions_count' => 'questions',
+	                'test_result_pass_subtitle' => 'Good work. Review each question below to keep improving.',
+	                'test_result_fail_subtitle' => 'Review the missed and blank questions below, then try again when ready.',
                 'test_previous' => '← Previous',
                 'test_next' => 'Next →'
             ],
@@ -368,7 +393,8 @@ class Translate {
                 'pricing' => 'Ibiciro',
                 'about' => 'Ibyerekeye',
                 'profile' => 'Umwirondoro',
-                'settings' => 'Impost',
+	                'settings' => 'Impost',
+	                'menu' => 'Ibikubiyemo',
                 'welcome' => 'Murakaze',
                 'auth_create_account' => '📝 Funguza Konti',
                 'auth_full_name' => 'Izina ryuzuye',
@@ -520,7 +546,31 @@ class Translate {
                 '404_header' => 'Urupapuro ntirwabonywe',
                 '404_text' => 'Urupapuro urimo gushaka ntirubaho cyangwa rwimuwe.',
                 '404_button' => 'Garuka Ibanze',
-                'test_answered' => 'Byasubijwe',
+	                'test_answered' => 'Byasubijwe',
+	                'test_blank' => 'Bidasubijwe',
+	                'test_correct' => 'Byiza',
+	                'test_incorrect' => 'Bitari byo',
+	                'test_no_answer' => 'Nta gisubizo',
+	                'test_your_answer' => 'Igisubizo cyawe',
+	                'test_correct_answer' => 'Igisubizo cyiza',
+	                'test_correct_answer_unavailable' => 'Igisubizo cyiza ntikiboneka',
+	                'test_exam_status' => 'Imiterere y\'ikizamini',
+	                'test_unanswered_zero_note' => 'Ibibazo udasubije bihabwa zeru iyo wohereje ikizamini cyangwa igihe kirangiye.',
+	                'test_submit_anytime_note' => 'Ushobora kohereza ikizamini igihe icyo ari cyo cyose. Ibibazo udasubije bibarwa nk\'ibitari byo kandi bihabwa zeru.',
+	                'test_all_answered_notice' => 'Ibibazo byose byasubijwe. Ushobora kohereza ikizamini.',
+	                'test_blank_submit_notice' => 'Ibibazo bidasubijwe bihabwa zeru iyo wohereje ubu.',
+	                'test_blank_confirm_suffix' => 'Ibibazo bidasubijwe bizahabwa zeru.',
+	                'test_submit_now_confirm' => 'Wohereza ikizamini ubu?',
+	                'test_time_expired' => 'Igihe kirangiye',
+	                'test_submitting_exam' => 'Ikizamini kiri koherezwa',
+	                'test_saving_answers' => 'Tegereza gato ibisubizo byawe bibikwe.',
+	                'test_saving_blanks_zero' => 'Ibibazo bidasubijwe biri kubikwa nka zeru.',
+	                'test_leaving_warning' => 'Kuva kuri uru rupapuro birangiza ikizamini. Ibibazo bidasubijwe bihabwa zeru.',
+	                'test_review' => 'Subiramo',
+	                'test_pass_mark' => 'Amanota asabwa',
+	                'test_questions_count' => 'ibibazo',
+	                'test_result_pass_subtitle' => 'Wakoze neza. Ongera urebe buri kibazo kugira ngo ukomeze kunoza.',
+	                'test_result_fail_subtitle' => 'Ongera urebe ibibazo watsinzwe n\'ibidasubijwe, hanyuma uzongere ugerageze.',
                 'test_previous' => '← Ubanjirije',
                 'test_next' => 'Ukomeza →'
             ]

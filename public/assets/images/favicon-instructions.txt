@@ -1,0 +1,23 @@
+FAVICON SETUP INSTRUCTIONS
+========================
+
+To complete the favicon setup, you need to:
+
+1. Replace the placeholder favicon.svg with your actual logo
+2. Create the following favicon files from your logo:
+   - favicon.ico (for older browsers)
+   - favicon-16x16.png (16x16 pixels)
+   - favicon-32x32.png (32x32 pixels) 
+   - apple-touch-icon.png (180x180 pixels for iOS)
+
+Recommended tools:
+- Online: https://favicon.io/
+- Online: https://www.favicon-generator.org/
+- Desktop: GIMP, Photoshop, or any image editor
+
+Current files:
+- favicon.svg (placeholder - replace with your logo)
+- site.webmanifest (PWA manifest - ready to use)
+
+Your favicon should be simple and recognizable at small sizes.
+The car emoji (P) in the current placeholder represents "ProviSor".

@@ -57,23 +57,33 @@ class Test {
         return $this->getRemainingTime($test_id) <= 0;
     }
 
-    public function saveAnswer($test_id, $question_id, $answer_id) {
-        // Check if answer is correct
-        $stmt = $this->db->prepare("
-            SELECT is_correct FROM answers WHERE id = ?
-        ");
-        $stmt->execute([$answer_id]);
-        $answer = $stmt->fetch();
-        
-        $is_correct = $answer ? $answer['is_correct'] : false;
-        
-        // Save answer
+    public function saveAnswer($test_id, $question_id, $answer_id = null) {
+        $answer_id = $answer_id !== null && $answer_id !== '' ? (int) $answer_id : null;
+        $is_correct = false;
+
+        if ($answer_id) {
+            $stmt = $this->db->prepare("
+                SELECT is_correct FROM answers WHERE id = ? AND question_id = ?
+            ");
+            $stmt->execute([$answer_id, $question_id]);
+            $answer = $stmt->fetch();
+            if ($answer) {
+                $is_correct = (bool) $answer['is_correct'];
+            } else {
+                $answer_id = null;
+            }
+        }
+
+        $this->db->prepare("
+            DELETE FROM test_answers WHERE test_id = ? AND question_id = ?
+        ")->execute([$test_id, $question_id]);
+
         $log_stmt = $this->db->prepare("
             INSERT INTO test_answers (test_id, question_id, selected_answer_id, is_correct)
             VALUES (?, ?, ?, ?)
         ");
-        
-        return $log_stmt->execute([$test_id, $question_id, $answer_id, $is_correct]);
+
+        return $log_stmt->execute([$test_id, $question_id, $answer_id, $is_correct ? 1 : 0]);
     }
 
     public function completeTest($test_id) {
