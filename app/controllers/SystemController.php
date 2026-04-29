@@ -10,11 +10,11 @@ class SystemController extends Controller {
 
     // Set language preference
     public function setLanguage() {
-        $language = $_POST['language'] ?? 'en';
+        $language = $_POST['language'] ?? 'rw';
         
         // Validate language
-        if (!in_array($language, ['en', 'fr', 'rw'])) {
-            $language = 'en';
+        if (!in_array($language, ['en', 'rw'])) {
+            $language = 'rw';
         }
         
         // Store in session and Translate static state

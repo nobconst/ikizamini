@@ -13,7 +13,7 @@ class Controller {
 
     public function view($view, $data = []) {
         // Add current language to data
-        $current_lang = $_SESSION['lang'] ?? 'en';
+        $current_lang = $_SESSION['lang'] ?? 'rw';
         $data['current_lang'] = $current_lang;
         
         extract($data);
