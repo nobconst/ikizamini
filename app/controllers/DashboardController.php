@@ -2,7 +2,8 @@
 
 require_once '../core/Controller.php';
 require_once '../app/models/User.php';
-require_once '../app/models\Payment.php';
+require_once '../app/models/Payment.php';
+require_once '../app/models/Test.php';
 
 class DashboardController extends Controller {
     
@@ -29,6 +30,11 @@ class DashboardController extends Controller {
         $access = $stmt->fetch();
         
         // Get test history
+        $test_model = new Test();
+        $total_tests = $test_model->getTotalTestsCompleted($user_id);
+        $average_score = $test_model->getAverageScore($user_id);
+        $pass_rate = $test_model->getPassRate($user_id);
+
         $stmt = $this->db->prepare("
             SELECT * FROM test_sessions 
             WHERE user_id = ? AND completed = TRUE
@@ -41,7 +47,10 @@ class DashboardController extends Controller {
         $this->view('dashboard/index', [
             'user' => $user,
             'access' => $access,
-            'recent_tests' => $recent_tests
+            'recent_tests' => $recent_tests,
+            'total_tests' => $total_tests,
+            'average_score' => $average_score,
+            'pass_rate' => $pass_rate
         ]);
     }
 

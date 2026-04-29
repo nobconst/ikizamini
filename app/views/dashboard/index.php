@@ -5,46 +5,43 @@ ob_start();
 <div class="container">
     <h1 style="margin: 30px 0;"><?= Translate::t('dashboard_title') ?></h1>
 
-    <!-- Stats -->
     <div class="dashboard-grid">
         <div class="stats-card">
             <div class="stats-label"><?= Translate::t('dashboard_remaining_tests') ?></div>
-            <div class="stats-value"><?= $access['remaining_tests'] ?? 0 ?></div>
+            <div class="stats-value"><?= (int) ($access['remaining_tests'] ?? 0) ?></div>
         </div>
         <div class="stats-card success">
             <div class="stats-label"><?= Translate::t('dashboard_tests_completed') ?></div>
-            <div class="stats-value" id="total-tests">0</div>
+            <div class="stats-value" id="total-tests"><?= (int) ($total_tests ?? 0) ?></div>
         </div>
         <div class="stats-card warning">
             <div class="stats-label"><?= Translate::t('dashboard_avg_score') ?></div>
-            <div class="stats-value" id="avg-score">0%</div>
+            <div class="stats-value" id="avg-score"><?= round(((float) ($average_score ?? 0) / TOTAL_QUESTIONS) * 100, 1) ?>%</div>
         </div>
         <div class="stats-card danger">
             <div class="stats-label"><?= Translate::t('dashboard_pass_rate') ?></div>
-            <div class="stats-value" id="pass-rate">0%</div>
+            <div class="stats-value" id="pass-rate"><?= round((float) ($pass_rate ?? 0), 1) ?>%</div>
         </div>
     </div>
 
-    <!-- Access Status -->
     <div class="row">
         <div class="col col-12">
             <div class="card">
                 <div class="card-header"><?= Translate::t('dashboard_your_access') ?></div>
-                <?php if ($access['unlimited']): ?>
+                <?php if (!empty($access['unlimited'])): ?>
                     <p><?= Translate::t('dashboard_unlimited_active') ?></p>
-                    <?php if ($access['expires_at']): ?>
+                    <?php if (!empty($access['expires_at'])): ?>
                         <p><?= Translate::t('dashboard_expires') ?> <?= date('M d, Y', strtotime($access['expires_at'])) ?></p>
                     <?php endif; ?>
-                <?php elseif ($access['remaining_tests'] > 0): ?>
+                <?php elseif (!empty($access['remaining_tests']) && $access['remaining_tests'] > 0): ?>
                     <p><?= str_replace('{count}', $access['remaining_tests'], Translate::t('dashboard_tests_remaining')) ?></p>
                 <?php else: ?>
-                    <p><?= Translate::t('dashboard_no_access') ?> <a href="<?= SITE_URL ?>/payment">Purchase a plan</a></p>
+                    <p><?= Translate::t('dashboard_no_access') ?> <a href="<?= SITE_URL ?>/payment"><?= Translate::t('dashboard_purchase_plan') ?></a></p>
                 <?php endif; ?>
             </div>
         </div>
     </div>
 
-    <!-- Quick Actions -->
     <div class="row">
         <div class="col">
             <div class="card" style="text-align: center;">
@@ -69,7 +66,6 @@ ob_start();
         </div>
     </div>
 
-    <!-- Recent Tests -->
     <?php if (!empty($recent_tests)): ?>
         <div style="margin-top: 40px;">
             <h2><?= Translate::t('dashboard_recent_tests') ?></h2>
@@ -86,16 +82,16 @@ ob_start();
                     <?php foreach ($recent_tests as $test): ?>
                         <tr>
                             <td><?= date('M d, Y H:i', strtotime($test['created_at'])) ?></td>
-                            <td><strong><?= $test['score'] ?>/20</strong></td>
+                            <td><strong><?= $test['score'] ?>/<?= TOTAL_QUESTIONS ?></strong></td>
                             <td>
-                                <?php if ($test['score'] >= 16): ?>
+                                <?php if ($test['score'] >= PASS_SCORE): ?>
                                     <span style="color: var(--success);"><?= Translate::t('dashboard_passed') ?></span>
                                 <?php else: ?>
                                     <span style="color: var(--danger);"><?= Translate::t('dashboard_not_passed') ?></span>
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <a href="<?= SITE_URL ?>/ikizamini/test/result/<?= $test['id'] ?>"><?= Translate::t('dashboard_view_details') ?></a>
+                                <a href="<?= SITE_URL ?>/test/result/<?= $test['id'] ?>"><?= Translate::t('dashboard_view_details') ?></a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -104,11 +100,10 @@ ob_start();
         </div>
     <?php endif; ?>
 
-    <!-- Footer Links -->
     <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-        <a href="<?= SITE_URL ?>/dashboard/profile">👤 Edit Profile</a> | 
-        <a href="<?= SITE_URL ?>/dashboard/history">📜 Full History</a> | 
-        <a href="<?= SITE_URL ?>/auth/logout">🚪 Logout</a>
+        <a href="<?= SITE_URL ?>/dashboard/profile"><?= Translate::t('profile') ?></a> |
+        <a href="<?= SITE_URL ?>/dashboard/history"><?= Translate::t('dashboard_view_history') ?></a> |
+        <a href="<?= SITE_URL ?>/auth/logout"><?= Translate::t('logout') ?></a>
     </div>
 </div>
 

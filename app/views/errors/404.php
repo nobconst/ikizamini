@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="<?= htmlspecialchars($_SESSION['lang'] ?? 'rw') ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page Not Found</title>
+    <title>404 - <?= SITE_NAME ?></title>
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/assets/css/style.css">
 </head>
 <body>
     <header>
         <div class="container">
             <nav>
-                <div class="logo">🚗 ProviSor Exam</div>
-                <a href="<?= SITE_URL ?>/" class="btn btn-sm btn-primary">Home</a>
+                <div class="logo"><?= SITE_NAME ?></div>
+                <a href="<?= SITE_URL ?>/" class="btn btn-sm btn-primary"><?= Translate::t('home') ?></a>
             </nav>
         </div>
     </header>
@@ -27,7 +27,7 @@
 
     <footer>
         <div class="footer-bottom" style="text-align: center;">
-            <p>&copy; 2024 ProviSor Exam System. All rights reserved.</p>
+            <p><?= Translate::t('copyright') ?></p>
         </div>
     </footer>
 </body>

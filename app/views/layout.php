@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'ProviSor Exam System' ?></title>
+    <title><?= $title ?? SITE_NAME ?></title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="<?= SITE_URL ?>/public/assets/images/favicon.svg">
@@ -19,9 +19,9 @@
     <header class="site-header">
         <div class="container">
             <nav class="site-nav" aria-label="Main navigation">
-                <a href="<?= SITE_URL ?>/" class="logo" aria-label="ProviSor Exam home">
-                    <span class="logo-mark" aria-hidden="true">P</span>
-                    <span>ProviSor Exam</span>
+                <a href="<?= SITE_URL ?>/" class="logo" aria-label="<?= SITE_NAME ?> home">
+                    <span class="logo-mark" aria-hidden="true">I</span>
+                    <span><?= SITE_NAME ?></span>
                 </a>
 
                 <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNav">
