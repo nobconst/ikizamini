@@ -7,7 +7,7 @@ define('DB_PASS', '');
 define('DB_NAME', 'provisor_exam');
 
 // SITE SETTINGS
-define('SITE_NAME', 'ProviSor Exam');
+define('SITE_NAME', 'IKIZAMINI ONLINE');
 define('SITE_URL', 'http://localhost/ikizamini');
 define('TIMEZONE', 'Africa/Kigali');
 
