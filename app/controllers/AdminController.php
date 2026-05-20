@@ -607,6 +607,74 @@ class AdminController extends Controller {
         ]);
     }
 
+    // Generate Test (admin preview)
+    public function generateTest() {
+        $this->requireAdmin();
+        $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'rw';
+        $category_id = $_GET['category_id'] ?? null;
+        $categories = $this->db->query("SELECT * FROM categories")->fetchAll();
+
+        $questions = [];
+        if (isset($_GET['generate'])) {
+            $sql = "
+                SELECT q.id FROM questions q
+                JOIN question_translations qt ON q.id = qt.question_id
+                WHERE qt.language = ?
+            ";
+            $params = [$lang];
+            if ($category_id) {
+                $sql .= " AND q.category_id = ?";
+                $params[] = $category_id;
+            }
+            $sql .= " ORDER BY RAND() LIMIT 20";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            $ids = array_column($stmt->fetchAll(), 'id');
+
+            if (!empty($ids)) {
+                $placeholders = implode(',', array_fill(0, count($ids), '?'));
+                $stmt = $this->db->prepare("
+                    SELECT q.id, qt.question_text, q.image,
+                           a.id as answer_id, a.is_correct, at.answer_text
+                    FROM questions q
+                    JOIN question_translations qt ON q.id = qt.question_id AND qt.language = ?
+                    LEFT JOIN answers a ON q.id = a.question_id
+                    LEFT JOIN answer_translations at ON a.id = at.answer_id AND at.language = ?
+                    WHERE q.id IN ($placeholders)
+                    ORDER BY FIELD(q.id, $placeholders), a.id
+                ");
+                $stmt->execute(array_merge([$lang, $lang], $ids, $ids));
+                $rows = $stmt->fetchAll();
+
+                foreach ($rows as $row) {
+                    if (!isset($questions[$row['id']])) {
+                        $questions[$row['id']] = [
+                            'id'      => $row['id'],
+                            'text'    => $row['question_text'],
+                            'image'   => $row['image'],
+                            'answers' => []
+                        ];
+                    }
+                    if ($row['answer_id']) {
+                        $questions[$row['id']]['answers'][] = [
+                            'id'         => $row['answer_id'],
+                            'text'       => $row['answer_text'],
+                            'is_correct' => (bool) $row['is_correct']
+                        ];
+                    }
+                }
+                $questions = array_values($questions);
+            }
+        }
+
+        $this->view('admin/generate-test', [
+            'questions'   => $questions,
+            'lang'        => $lang,
+            'category_id' => $category_id,
+            'categories'  => $categories
+        ]);
+    }
+
     // Categories
     public function categories() {
         $categories = $this->db->query("SELECT * FROM categories")->fetchAll();

@@ -58,6 +58,18 @@ ob_start();
         </div>
     </div>
 
+    <!-- Generate Test -->
+    <h2 style="margin: 40px 0 20px;">📋 Test Paper</h2>
+    <div class="row">
+        <div class="col col-12">
+            <div class="card" style="text-align: center;">
+                <div class="card-header">📋 Generate Test Paper</div>
+                <p>Generate a printable 20-question test paper with answers highlighted</p>
+                <a href="<?= SITE_URL ?>/admin/generateTest" class="btn btn-primary">Generate Test Paper</a>
+            </div>
+        </div>
+    </div>
+
     <!-- Actions -->
     <h2 style="margin: 40px 0 20px;">📊 <?= Translate::t('reports') ?></h2>
     <div class="row">
