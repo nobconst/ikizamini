@@ -244,7 +244,9 @@ class Translate {
 	                'test_result_pass_subtitle' => 'Good work. Review each question below to keep improving.',
 	                'test_result_fail_subtitle' => 'Review the missed and blank questions below, then try again when ready.',
                 'test_previous' => '← Previous',
-                'test_next' => 'Next →'
+                'test_next' => 'Next →',
+                'test_answer_label' => 'Answer',
+                'test_question_label' => 'Question',
             ],
             'fr' => [
                 'dashboard' => 'Tableau de bord',
@@ -383,7 +385,9 @@ class Translate {
                 'view_results' => 'Voir les résultats',
                 'test_answered' => 'Répondues',
                 'test_previous' => '← Précédent',
-                'test_next' => 'Suivant →'
+                'test_next' => 'Suivant →',
+                'test_answer_label' => 'Réponse',
+                'test_question_label' => 'Question',
             ],
             'rw' => [
                 'dashboard' => 'Igikoresho',
@@ -581,7 +585,9 @@ class Translate {
 	                'test_result_pass_subtitle' => 'Wakoze neza. Ongera urebe buri kibazo kugira ngo ukomeze kunoza.',
 	                'test_result_fail_subtitle' => 'Ongera urebe ibibazo watsinzwe n\'ibidasubijwe, hanyuma uzongere ugerageze.',
                 'test_previous' => '← Ubanjirije',
-                'test_next' => 'Ukomeza →'
+                'test_next' => 'Ukomeza →',
+                'test_answer_label' => 'Igisubizo',
+                'test_question_label' => 'Ikibazo',
             ]
         ];
         

@@ -303,7 +303,7 @@
                 ?>
                 <div class="gt-card">
                     <div class="gt-card-head">
-                        <span class="gt-qno">Question <?= str_pad($idx + 1, 2, '0', STR_PAD_LEFT) ?> / <?= count($questions) ?></span>
+                        <span class="gt-qno"><?= Translate::t('test_question_label') ?> <?= str_pad($idx + 1, 2, '0', STR_PAD_LEFT) ?> / <?= count($questions) ?></span>
                     </div>
 
                     <?php if (!empty($q['image'])): ?>
@@ -336,7 +336,7 @@
                     ?>
                     <?php if ($correctIdx !== null): ?>
                     <div class="gt-correct-strip">
-                        <span class="gt-correct-label">Answer:</span>
+                        <span class="gt-correct-label"><?= Translate::t('test_answer_label') ?>:</span>
                         <span class="gt-correct-letter"><?= $letters[$correctIdx] ?></span>
                         <span class="gt-correct-text"><?= htmlspecialchars($correctText) ?></span>
                     </div>
