@@ -607,6 +607,31 @@ class AdminController extends Controller {
         ]);
     }
 
+    public function checkDuplicate() {
+        $text = trim($_POST['text'] ?? '');
+        $lang = $_POST['lang'] ?? 'rw';
+
+        if (strlen($text) < 10) {
+            $this->json(['matches' => []]);
+        }
+
+        // Search for questions with similar text (at least 6 consecutive words match)
+        $words = preg_split('/\s+/', $text);
+        $searchTerm = implode(' ', array_slice($words, 0, min(6, count($words))));
+
+        $stmt = $this->db->prepare("
+            SELECT q.id, qt.question_text
+            FROM questions q
+            JOIN question_translations qt ON q.id = qt.question_id
+            WHERE qt.language = ? AND qt.question_text LIKE ?
+            LIMIT 5
+        ");
+        $stmt->execute([$lang, '%' . $searchTerm . '%']);
+        $matches = $stmt->fetchAll();
+
+        $this->json(['matches' => $matches]);
+    }
+
     // Generate Test (admin preview)
     public function generateTest() {
         $this->requireAdmin();

@@ -54,6 +54,27 @@ $user_lang = $_SESSION['lang'] ?? 'en';
     .language-section.active {
         display: block;
     }
+
+    .dup-warning {
+        margin-top: 8px;
+        padding: 10px 14px;
+        background: #fff8e8;
+        border: 1px solid rgba(183,121,31,.35);
+        border-radius: 6px;
+        font-size: 13px;
+        color: #7a4f0d;
+        line-height: 1.6;
+    }
+    .dup-warning strong { display: block; margin-bottom: 6px; }
+    .dup-warning a {
+        display: inline-block;
+        margin: 2px 0;
+        color: #0f6bbf;
+        font-weight: 700;
+        text-decoration: underline;
+        word-break: break-word;
+    }
+    .dup-warning a:hover { color: #0a56a0; }
 </style>
 
 <div class="container">
@@ -100,7 +121,8 @@ $user_lang = $_SESSION['lang'] ?? 'en';
                 <div class="language-section <?= $user_lang === 'en' ? 'active' : '' ?>" id="section-en">
                     <h3 style="margin-top: 0; margin-bottom: 20px;">📝 Question (English)</h3>
                     <div class="form-group">
-                        <textarea name="question_en" placeholder="Question text in English" rows="4"></textarea>
+                        <textarea name="question_en" id="question_en" placeholder="Question text in English" rows="4" oninput="checkDuplicate(this, 'en')"></textarea>
+                        <div id="dup-en" class="dup-warning" style="display:none;"></div>
                     </div>
 
                     <h4 style="margin-top: 25px; margin-bottom: 15px;">Answers (English)</h4>
@@ -120,7 +142,8 @@ $user_lang = $_SESSION['lang'] ?? 'en';
                 <div class="language-section <?= $user_lang === 'fr' ? 'active' : '' ?>" id="section-fr">
                     <h3 style="margin-top: 0; margin-bottom: 20px;">📝 Question (Français)</h3>
                     <div class="form-group">
-                        <textarea name="question_fr" placeholder="Question text in French" rows="4"></textarea>
+                        <textarea name="question_fr" id="question_fr" placeholder="Question text in French" rows="4" oninput="checkDuplicate(this, 'fr')"></textarea>
+                        <div id="dup-fr" class="dup-warning" style="display:none;"></div>
                     </div>
 
                     <h4 style="margin-top: 25px; margin-bottom: 15px;">Answers (Français)</h4>
@@ -140,7 +163,8 @@ $user_lang = $_SESSION['lang'] ?? 'en';
                 <div class="language-section <?= $user_lang === 'rw' ? 'active' : '' ?>" id="section-rw">
                     <h3 style="margin-top: 0; margin-bottom: 20px;">📝 Question (Kinyarwanda)</h3>
                     <div class="form-group">
-                        <textarea name="question_rw" placeholder="Question text in Kinyarwanda" rows="4"></textarea>
+                        <textarea name="question_rw" id="question_rw" placeholder="Question text in Kinyarwanda" rows="4" oninput="checkDuplicate(this, 'rw')"></textarea>
+                        <div id="dup-rw" class="dup-warning" style="display:none;"></div>
                     </div>
 
                     <h4 style="margin-top: 25px; margin-bottom: 15px;">Answers (Kinyarwanda)</h4>
@@ -363,6 +387,36 @@ function importQuestionsToServer(questions) {
     .catch(error => {
         alert('Import error: ' + error.message);
     });
+}
+
+const _dupTimers = {};
+function checkDuplicate(textarea, lang) {
+    clearTimeout(_dupTimers[lang]);
+    const box = document.getElementById('dup-' + lang);
+    const text = textarea.value.trim();
+    if (text.length < 10) { box.style.display = 'none'; return; }
+
+    _dupTimers[lang] = setTimeout(() => {
+        const fd = new FormData();
+        fd.append('text', text);
+        fd.append('lang', lang);
+        fetch('<?= SITE_URL ?>/admin/checkDuplicate', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(data => {
+                if (data.matches && data.matches.length > 0) {
+                    let html = '<strong>⚠️ Similar question(s) already exist — you can still add yours:</strong>';
+                    data.matches.forEach(m => {
+                        const preview = m.question_text.length > 80 ? m.question_text.substring(0, 80) + '…' : m.question_text;
+                        html += `<br><a href="<?= SITE_URL ?>/admin/viewQuestion/${m.id}" target="_blank">Q#${m.id}: ${preview}</a>`;
+                    });
+                    box.innerHTML = html;
+                    box.style.display = 'block';
+                } else {
+                    box.style.display = 'none';
+                }
+            })
+            .catch(() => { box.style.display = 'none'; });
+    }, 600);
 }
 
 function validateLanguages() {
