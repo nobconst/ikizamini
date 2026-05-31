@@ -1,2 +1,13 @@
-.htaccess
+# Ignore sensitive configuration
 config/config.php
+
+# Ignore Apache config (if custom per environment)
+.htaccess
+public/.htaccess
+
+# Ignore logs
+*.log
+
+# Ignore cPanel / system files
+.cpanel/
+*.tmp
