@@ -5,11 +5,11 @@ ob_start();
 <div class="container">
     <div style="max-width: 600px; margin: 50px auto;">
         <div class="card">
-            <div class="card-header">⏳ Processing Payment...</div>
+            <div class="card-header">⏳ <?= Translate::t('payment_processing_title') ?></div>
             
             <div style="text-align: center; padding: 30px;">
                 <div style="font-size: 48px; margin-bottom: 20px;">💳</div>
-                <p>Your payment is being processed. Please wait...</p>
+                <p><?= Translate::t('payment_processing_message') ?></p>
                 <div style="background: linear-gradient(90deg, #ddd 0%, #ddd 50%, transparent 50%, transparent 100%);
                             background-size: 200% 100%;
                             animation: loading 1.5s infinite;
@@ -17,14 +17,14 @@ ob_start();
                             border-radius: 2px;
                             margin: 30px 0;">
                 </div>
-                <p style="color: #666; font-size: 14px;">Do not close this page</p>
+                <p style="color: #666; font-size: 14px;"><?= Translate::t('payment_do_not_close') ?></p>
             </div>
 
             <div style="background: #f0f7ff; border-left: 4px solid #007bff; padding: 15px; border-radius: 4px;">
-                <p><strong>📱 Next Steps:</strong></p>
-                <p>1. You will receive a prompt on your phone</p>
-                <p>2. Enter your PIN to confirm payment</p>
-                <p>3. Your tests will activate instantly</p>
+                <p><strong>📱 <?= Translate::t('payment_next_steps') ?></strong></p>
+                <p><?= Translate::t('payment_step_prompt_mobile') ?></p>
+                <p><?= Translate::t('payment_step_confirm_pin') ?></p>
+                <p><?= Translate::t('payment_step_activate') ?></p>
             </div>
         </div>
     </div>
@@ -59,7 +59,7 @@ function checkPaymentStatus() {
             if (checkCount < maxChecks) {
                 setTimeout(checkPaymentStatus, 3000);
             } else {
-                alert('Payment verification timeout. Please check your payment status.');
+                alert('<?= Translate::t('payment_verification_timeout') ?>');
                 window.location.href = '<?= SITE_URL ?>/payment/history';
             }
         }

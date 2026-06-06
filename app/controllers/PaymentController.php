@@ -2,6 +2,7 @@
 
 require_once '../core/Controller.php';
 require_once '../app/models/Payment.php';
+require_once '../app/models/pay_parse.php';
 
 class PaymentController extends Controller {
     
@@ -41,49 +42,131 @@ class PaymentController extends Controller {
         $payment_method = $_POST['payment_method'] ?? 'momo';
 
         if (!$plan_id || empty($phone)) {
-            $_SESSION['error'] = 'Plan and phone are required';
+            $_SESSION['error'] = Translate::t('payment_missing_plan_or_phone');
             $this->redirect('/payment');
         }
 
-        // Create payment record
-        $payment_id = $this->payment->createPayment($user_id, $plan_id, $phone,$payment_method);
+        $plan = $this->payment->getPlanById($plan_id);
+        if (!$plan) {
+            $_SESSION['error'] = Translate::t('payment_plan_not_found');
+            $this->redirect('/payment');
+        }
+
+        $tx_ref = 'PAY-' . $user_id . '-' . time() . '-' . rand(100, 999);
+
+        // Create payment record with gateway reference
+        $payment_id = $this->payment->createPayment($user_id, $plan_id, $phone, $payment_method, $tx_ref);
 
         if (!$payment_id) {
-            $_SESSION['error'] = 'Failed to create payment';
+            $_SESSION['error'] = Translate::t('payment_create_failed');
             $this->redirect('/payment');
         }
 
-        // Here you would integrate with Mobile Money API
-        // For now, we'll simulate success after 5 seconds
+        $gatewayResult = hdev_payment::pay($phone, $plan['price'], $tx_ref, SITE_URL . '/payment/verify/' . $payment_id);
+
+        if (!$gatewayResult || (isset($gatewayResult->error) && $gatewayResult->error)) {
+            $this->payment->failPayment($payment_id);
+            $_SESSION['error'] = Translate::t('payment_request_failed');
+            $this->redirect('/payment');
+        }
+
+        if (isset($gatewayResult->status) && in_array(strtolower($gatewayResult->status), ['failed', 'error', 'declined'])) {
+            $this->payment->failPayment($payment_id);
+            $_SESSION['error'] = Translate::t('payment_request_failed');
+            $this->redirect('/payment');
+        }
 
         $this->log('PAYMENT_INITIATED', $user_id);
+        $_SESSION['success'] = Translate::t('payment_prompt_sent');
 
         $this->view('payment/processing', ['payment_id' => $payment_id]);
     }
 
     public function verify($payment_id) {
-        // This would be called by a webhook or polling
-
         $payment = $this->payment->getPayment($payment_id);
 
         if (!$payment) {
-            $this->json(['error' => 'Payment not found'], 404);
+            $this->json(['error' => Translate::t('payment_not_found')], 404);
         }
 
-        // In production, you would check with the Mobile Money provider
-        // For demo, we simulate success
+        if ($payment['user_id'] !== $_SESSION['user_id']) {
+            $this->json(['error' => Translate::t('payment_unauthorized')], 403);
+        }
 
-        if ($payment['status'] === 'pending') {
-            $transaction_id = 'TXN-' . time();
-            $this->payment->completePayment($payment_id, $transaction_id);
-            $_SESSION['success'] = 'Payment successful!';
-            $this->log('PAYMENT_SUCCESS', $payment['user_id']);
+        if ($payment['status'] === 'success') {
             $this->json(['status' => 'success']);
-        } elseif ($payment['status'] === 'success') {
-            $this->json(['status' => 'success']);
-        } else {
+        }
+
+        if ($payment['status'] === 'failed') {
             $this->json(['status' => 'failed']);
         }
+
+        if (empty($payment['transaction_id'])) {
+            $this->json(['status' => 'pending']);
+        }
+
+        $gatewayResult = hdev_payment::get_pay($payment['transaction_id']);
+        $status = $this->parseHdevPaymentStatus($gatewayResult);
+
+        if ($status === 'success') {
+            $this->payment->completePayment($payment_id, $payment['transaction_id']);
+            $_SESSION['success'] = Translate::t('payment_successful');
+            $this->log('PAYMENT_SUCCESS', $payment['user_id']);
+            $this->json(['status' => 'success']);
+        }
+
+        if ($status === 'failed') {
+            $this->payment->failPayment($payment_id);
+            $this->json(['status' => 'failed']);
+        }
+
+        $this->json(['status' => 'pending']);
+    }
+
+    private function parseHdevPaymentStatus($response) {
+        if (!$response) {
+            return 'pending';
+        }
+
+        if (isset($response->error) && $response->error) {
+            return 'failed';
+        }
+
+        if (isset($response->status)) {
+            $status = strtolower(trim($response->status));
+            if (in_array($status, ['success', 'ok', 'completed', 'paid', 'successful'])) {
+                return 'success';
+            }
+            if (in_array($status, ['failed', 'error', 'declined', 'cancelled', 'canceled'])) {
+                return 'failed';
+            }
+            if (in_array($status, ['pending', 'processing', 'waiting', 'awaiting'])) {
+                return 'pending';
+            }
+        }
+
+        if (isset($response->data) && is_object($response->data) && isset($response->data->status)) {
+            $status = strtolower(trim($response->data->status));
+            if (in_array($status, ['success', 'ok', 'completed', 'paid', 'successful'])) {
+                return 'success';
+            }
+            if (in_array($status, ['failed', 'error', 'declined', 'cancelled', 'canceled'])) {
+                return 'failed';
+            }
+            if (in_array($status, ['pending', 'processing', 'waiting', 'awaiting'])) {
+                return 'pending';
+            }
+        }
+
+        if (isset($response->message) && stripos($response->message, 'success') !== false) {
+            return 'success';
+        }
+
+        if (isset($response->message) && stripos($response->message, 'failed') !== false) {
+            return 'failed';
+        }
+
+        return 'pending';
     }
 
     public function history() {

@@ -12,8 +12,8 @@
 if (!defined('hdev_payment')) {
 	class hdev_payment
 	{
-		private static $api_id = 'HDEV-2f7b3554-eb27-477b-8ebb-2ca799f03212-ID';
-		private static $api_key = 'HDEV-28407ece-5d24-438d-a38d-a9e8-73105c905a7d-KEY';
+		private static $api_id = 'HDEV-2f7b3554-eb27-477b-8ebb-2ca799f03412-ID';
+		private static $api_key = 'HDEV-28407ece-5d24-438d-a9e8-73105c905a7d-KEY';
 		public static function 	api_key($value='')
 		{
 			self::$api_key = $value;
