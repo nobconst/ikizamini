@@ -9,3 +9,4 @@ $url = $_GET['url'] ?? 'home';
 // Create router and route
 $router = new Router();
 $router->route($url);
+
