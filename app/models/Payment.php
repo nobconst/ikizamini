@@ -26,17 +26,17 @@ class Payment {
         return $stmt->fetch();
     }
 
-    public function createPayment($user_id, $plan_id, $phone) {
+    public function createPayment($user_id, $plan_id, $phone,$payment_method) {
         $plan = $this->getPlanById($plan_id);
         
         if (!$plan) return false;
         
         $stmt = $this->db->prepare("
-            INSERT INTO payments (user_id, plan_id, amount, phone, status)
-            VALUES (?, ?, ?, ?, 'pending')
+            INSERT INTO payments (user_id, plan_id, amount, phone, payment_method, status)
+            VALUES (?, ?, ?, ?, ?, 'pending')
         ");
         
-        if ($stmt->execute([$user_id, $plan_id, $plan['price'], $phone])) {
+        if ($stmt->execute([$user_id, $plan_id, $plan['price'], $phone, $payment_method])) {
             return $this->db->lastInsertId();
         }
         return false;

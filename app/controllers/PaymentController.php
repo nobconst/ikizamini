@@ -46,7 +46,7 @@ class PaymentController extends Controller {
         }
 
         // Create payment record
-        $payment_id = $this->payment->createPayment($user_id, $plan_id, $phone);
+        $payment_id = $this->payment->createPayment($user_id, $plan_id, $phone,$payment_method);
 
         if (!$payment_id) {
             $_SESSION['error'] = 'Failed to create payment';
