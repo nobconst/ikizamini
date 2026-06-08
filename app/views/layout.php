@@ -3,7 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? SITE_NAME ?></title>
+    <title><?= htmlspecialchars($title ?? SITE_NAME) ?></title>
+
+    <!-- SEO meta -->
+    <meta http-equiv="content-language" content="<?= htmlspecialchars($current_lang ?? 'rw') ?>">
+    <meta name="description" content="<?= htmlspecialchars($meta_description ?? (SITE_NAME . ' - Ibizamini by\'abashoferi ku rubuga. Myitozo y\'ibizamini n\'ibisubizo by\'ako kanya mu Kinyarwanda.')) ?>">
+    <?php if (!empty($meta_keywords)): ?>
+        <meta name="keywords" content="<?= htmlspecialchars($meta_keywords) ?>">
+    <?php endif; ?>
+    <?php if (!empty($noindex)): ?>
+        <meta name="robots" content="noindex, nofollow">
+    <?php else: ?>
+        <meta name="robots" content="index, follow">
+    <?php endif; ?>
+
+    <!-- Canonical -->
+    <link rel="canonical" href="<?= htmlspecialchars($canonical ?? (rtrim(SITE_URL, '/') . $_SERVER['REQUEST_URI'])) ?>">
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="<?= htmlspecialchars(SITE_NAME) ?>">
+    <meta property="og:title" content="<?= htmlspecialchars($title ?? SITE_NAME) ?>">
+    <meta property="og:description" content="<?= htmlspecialchars($meta_description ?? (SITE_NAME . ' - Practice driving theory tests online.')) ?>">
+    <meta property="og:url" content="<?= htmlspecialchars(rtrim(SITE_URL, '/') . $_SERVER['REQUEST_URI']) ?>">
+    <?php if (!empty($meta_image)): ?>
+        <meta property="og:image" content="<?= htmlspecialchars($meta_image) ?>">
+    <?php else: ?>
+        <meta property="og:image" content="<?= SITE_URL ?>/public/assets/images/ikizamini%20logo.png">
+    <?php endif; ?>
+
+    <meta property="og:locale" content="<?= (($current_lang ?? 'rw') === 'en') ? 'en_US' : 'rw_RW' ?>">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= htmlspecialchars($title ?? SITE_NAME) ?>">
+    <meta name="twitter:description" content="<?= htmlspecialchars($meta_description ?? (SITE_NAME . ' - Practice driving theory tests online.')) ?>">
+
+    <!-- Sitemap -->
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="<?= SITE_URL ?>/sitemap.xml">
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "<?= htmlspecialchars(SITE_NAME) ?>",
+      "url": "<?= SITE_URL ?>",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "<?= SITE_URL ?>/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="<?= SITE_URL ?>/public/assets/images/favicon.svg">

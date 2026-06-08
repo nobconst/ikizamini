@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /app/
+Disallow: /config/
+Disallow: /core/
+Allow: /public/
+
+Sitemap: /sitemap.xml

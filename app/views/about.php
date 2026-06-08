@@ -1,4 +1,11 @@
 <?php
+// Page-specific SEO
+$title = SITE_NAME . ' - ' . (Translate::t('about_title') ?: 'About');
+$meta_description = Translate::t('about_description') ?: "Turageza kuri buri wese uburyo bwo kwitoza ibizamini bya provisoire n'ibizamini by'amategeko y'umuhanda mu Kinyarwanda. Dufasha abanyeshuri gukora imyitozo, gusuzuma ubumenyi no gutegura ibizamini bya theory.";
+$meta_keywords = 'ibijyanye natwe, ikizamini, ikizamini cya provisoire, ibizamini bya provisoire, imyitozo, provisoire online, Kwigira Provisoire, Twara.rw, Action College, Rwanda';
+$meta_image = SITE_URL . '/public/assets/images/ikizamini%20logo.png';
+$canonical = rtrim(SITE_URL, '/') . '/about';
+
 ob_start();
 ?>
 
