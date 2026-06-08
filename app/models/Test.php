@@ -10,7 +10,7 @@ class Test {
         $this->db = (new Database())->connect();
     }
 
-    public function createSession($user_id, $question_ids, $duration = 1200) {
+    public function createSession($user_id, $question_ids, $duration = TEST_DURATION) {
         $stmt = $this->db->prepare("
             INSERT INTO test_sessions (user_id, questions, start_time, duration)
             VALUES (?, ?, NOW(), ?)
@@ -48,7 +48,11 @@ class Test {
         
         $start_time = strtotime($session['start_time']);
         $elapsed = time() - $start_time;
-        $remaining = $session['duration'] - $elapsed;
+        $duration = intval($session['duration'] ?: TEST_DURATION);
+        if ($duration > TEST_DURATION) {
+            $duration = TEST_DURATION;
+        }
+        $remaining = $duration - $elapsed;
         
         return max(0, $remaining);
     }

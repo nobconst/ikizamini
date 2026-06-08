@@ -149,6 +149,7 @@ class TestController extends Controller {
         $questions = array_values($questions);
 
         $remaining_time = $this->test->getRemainingTime($test_id);
+        $remaining_time = min($remaining_time, TEST_DURATION);
 
         $this->view('test/take', [
             'test_id' => $test_id,
