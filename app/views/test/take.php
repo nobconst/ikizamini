@@ -432,7 +432,7 @@ $examText = [
     }
 
     .exam-map {
-      grid-template-columns: repeat(10, 1fr);
+      grid-template-columns: repeat(5, 1fr);
     }
   }
 
