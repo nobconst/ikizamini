@@ -25,7 +25,7 @@ class User {
                 // Create user access record
                 $access_stmt = $this->db->prepare("
                     INSERT INTO user_access (user_id, remaining_tests)
-                    VALUES (?, 0)
+                    VALUES (?, 2)
                 ");
                 $access_stmt->execute([$user_id]);
                 
