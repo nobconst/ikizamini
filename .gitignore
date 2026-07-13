@@ -4,7 +4,10 @@ config/config.php
 # Ignore Apache config (if custom per environment)
 .htaccess
 public/.htaccess
-
+checkout_logs.txt
+pawapay_checkout_logs.txt
+pawapay_deposits_logs.txt
+pawapay_refunds_logs.txt
 # Ignore logs
 *.log
 
